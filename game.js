@@ -1,6 +1,6 @@
-const names=['level1.jpg','level2.jpg','level3.jpg','level4.jpg','level5.jpg','level6.jpg','level7.jpg','level8.jpg','level9.jpg'];
+﻿const names=['level1.jpg','level2.jpg','level3.jpg','level4.jpg','level5.jpg','level6.jpg','level7.jpg','level8.jpg','level9.jpg'];
 const imgs=[],cutouts=[];
-names.forEach((n,i)=>{const im=new Image();im.onload=()=>{cutouts[i]=makeCutout(im)};im.onerror=()=>{cutouts[i]=null};im.src='assets/'+n;imgs[i]=im});
+names.forEach((n,i)=>{const im=new Image();im.onload=()=>{cutouts[i]=null};im.onerror=()=>{cutouts[i]=null};im.src='assets/'+n;imgs[i]=im});
 const cvs=document.getElementById('game'),ctx=cvs.getContext('2d'),nextC=document.getElementById('next'),nctx=nextC.getContext('2d');
 let W=0,H=0,balls=[],score=0,best=+localStorage.meroBest||0,nextLevel=0,currentLevel=0,gameOver=false,last=0,dangerTime=0;
 const radii=[22,30,40,52,66,82,100,120,142];
