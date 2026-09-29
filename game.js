@@ -43,3 +43,6 @@ function clipShape(c,x,y,r,l){c.beginPath();if(l===0){c.arc(x,y,r,0,Math.PI*2)}e
 
 
 
+
+function clipShape(c,x,y,r,l){const pts=shapeSets[l];c.beginPath();pts.forEach((p,i)=>i?c.lineTo(x+p[0]*r,y+p[1]*r):c.moveTo(x+p[0]*r,y+p[1]*r));c.closePath();c.clip()}
+
