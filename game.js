@@ -1,7 +1,7 @@
 ﻿const names=['level1.jpg','level2.jpg','level3.jpg','level4.jpg','level5.jpg','level6.jpg','level7.jpg','level8.jpg','level9.jpg'];
 const imgs=[];
 names.forEach((n,i)=>{const im=new Image();im.onerror=()=>{};im.src='assets/'+n+'?v=4';imgs[i]=im});
-const cvs=document.getElementById('game'),ctx=cvs.getContext('2d'),nextC=document.getElementById('next'),nctx=nextC.getContext('2d');
+const cvs=document.getElementById('game'),ctx=cvs.getContext('2d'),nextC=document.getElementById('next'),nctx=nextC.getContext('2d'),bgm=document.getElementById('bgm');if(bgm){bgm.volume=.28;const startMusic=()=>{bgm.play().catch(()=>{});document.removeEventListener('pointerdown',startMusic)};document.addEventListener('pointerdown',startMusic,{once:true})}
 let W=0,H=0,balls=[],score=0,best=+localStorage.meroBest||0,nextLevel=0,currentLevel=0,gameOver=false,last=0,dangerTime=0,aimX=0,hasAim=false;
 const radii=[22,30,40,52,66,82,100,120,142];
 document.getElementById('best').textContent=best;
@@ -45,4 +45,5 @@ function clipShape(c,x,y,r,l){c.beginPath();if(l===0){c.arc(x,y,r,0,Math.PI*2)}e
 
 
 function clipShape(c,x,y,r,l){const pts=shapeSets[l];c.beginPath();pts.forEach((p,i)=>i?c.lineTo(x+p[0]*r,y+p[1]*r):c.moveTo(x+p[0]*r,y+p[1]*r));c.closePath();c.clip()}
+
 
