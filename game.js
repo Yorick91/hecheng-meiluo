@@ -1,6 +1,6 @@
 ﻿const names=['level1.jpg','level2.jpg','level3.jpg','level4.jpg','level5.jpg','level6.jpg','level7.jpg','level8.jpg','level9.jpg'];
-const imgs=[],cutouts=[];
-names.forEach((n,i)=>{const im=new Image();im.onload=()=>{cutouts[i]=null};im.onerror=()=>{cutouts[i]=null};im.src='assets/'+n;imgs[i]=im});
+const imgs=[];
+names.forEach((n,i)=>{const im=new Image();im.onerror=()=>{};im.src='assets/'+n;imgs[i]=im});
 const cvs=document.getElementById('game'),ctx=cvs.getContext('2d'),nextC=document.getElementById('next'),nctx=nextC.getContext('2d');
 let W=0,H=0,balls=[],score=0,best=+localStorage.meroBest||0,nextLevel=0,currentLevel=0,gameOver=false,last=0,dangerTime=0;
 const radii=[22,30,40,52,66,82,100,120,142];
@@ -29,7 +29,7 @@ const shapeSets=[
 ];
 function clipShape(c,x,y,r,l){const pts=shapeSets[l];c.beginPath();pts.forEach((p,i)=>i?c.lineTo(x+p[0]*r,y+p[1]*r):c.moveTo(x+p[0]*r,y+p[1]*r));c.closePath();c.clip()}
 function draw(c,x,y,l,preview=false){
- const r=preview?Math.min(28,radii[l]*.34):radii[l],im=cutouts[l]||imgs[l];c.save();clipShape(c,x,y,r,l);
+ const r=preview?Math.min(28,radii[l]*.34):radii[l],im=imgs[l];c.save();clipShape(c,x,y,r,l);
  if(im&&im.naturalWidth){const scale=Math.min(2*r/im.naturalWidth,2*r/im.naturalHeight),ww=im.naturalWidth*scale,hh=im.naturalHeight*scale;c.drawImage(im,x-ww/2,y-hh/2,ww,hh)}
  else if(im&&im.width){const scale=Math.min(2*r/im.width,2*r/im.height),ww=im.width*scale,hh=im.height*scale;c.drawImage(im,x-ww/2,y-hh/2,ww,hh)}
  else{c.fillStyle='#d6a553';c.fillRect(x-r,y-r,2*r,2*r)}c.restore();
@@ -42,3 +42,4 @@ function merge(){for(let i=0;i<balls.length;i++)for(let j=i+1;j<balls.length;j++
 function loop(t){const dt=Math.min(2,(t-last)/16||1);last=t;if(!gameOver){for(const b of balls){b.vy+=.32*dt;b.x+=b.vx*dt;b.y+=b.vy*dt;if(b.x<b.r){b.x=b.r;b.vx*=-.35}if(b.x>W-b.r){b.x=W-b.r;b.vx*=-.35}if(b.y>H-b.r){b.y=H-b.r;b.vy*=-.22;b.vx*=.8}}for(let k=0;k<4;k++)merge();if(balls.some(b=>b.y-b.r<52))dangerTime+=dt;else dangerTime=0;if(dangerTime>60){gameOver=true;setTimeout(()=>alert('Game over! Score: '+score),100)}}ctx.clearRect(0,0,W,H);ctx.strokeStyle='#e5c4ab';ctx.setLineDash([8,10]);ctx.beginPath();ctx.moveTo(0,52);ctx.lineTo(W,52);ctx.stroke();ctx.setLineDash([]);balls.forEach(b=>draw(ctx,b.x,b.y,b.l));requestAnimationFrame(loop)}
 function px(e){const r=cvs.getBoundingClientRect();return(e.touches?e.touches[0].clientX:e.clientX)-r.left}
 cvs.addEventListener('pointerup',e=>drop(px(e)));document.getElementById('restart').onclick=reset;addEventListener('resize',resize);reset();requestAnimationFrame(loop);
+function clipShape(c,x,y,r,l){c.beginPath();if(l===0){c.arc(x,y,r,0,Math.PI*2)}else if(l===1){c.moveTo(x,y-r);c.lineTo(x-r,y+r);c.lineTo(x+r,y+r)}else if(l===2){c.rect(x-r,y-r,2*r,2*r)}else if(l===3){c.ellipse(x,y,r,r*.62,0,0,Math.PI*2)}else if(l===4){for(let i=0;i<5;i++){const a=-Math.PI/2+i*Math.PI*2/5;c.lineTo(x+Math.cos(a)*r,y+Math.sin(a)*r)}}else if(l===5){for(let i=0;i<6;i++){const a=Math.PI/6+i*Math.PI/3;c.lineTo(x+Math.cos(a)*r,y+Math.sin(a)*r)}}else if(l===6){c.moveTo(x,y-r);c.lineTo(x+r,y);c.lineTo(x,y+r);c.lineTo(x-r,y)}else if(l===7){for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,rr=i%2?r:r*.48;c.lineTo(x+Math.cos(a)*rr,y+Math.sin(a)*rr)}}else{c.moveTo(x-r*.2,y-r);c.lineTo(x+r*.8,y-r*.35);c.lineTo(x+r*.55,y+r);c.lineTo(x-r*.7,y+r*.65);c.lineTo(x-r,y-r*.35)}c.closePath();c.clip()}
