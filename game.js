@@ -58,3 +58,6 @@ function clipShape(c,x,y,r,l){const pts=shapeSets[l];c.beginPath();pts.forEach((
 
 
 
+
+/* Final shape renderer: overrides legacy duplicate clipShape definitions. */
+function clipShape(c,x,y,r,l){const pts=shapeSets[l]||shapeSets[0];c.beginPath();c.moveTo(x+pts[0][0]*r,y+pts[0][1]*r);for(let i=1;i<pts.length;i++)c.lineTo(x+pts[i][0]*r,y+pts[i][1]*r);c.closePath();c.clip()}
