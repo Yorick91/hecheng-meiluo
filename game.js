@@ -28,7 +28,7 @@ const shapeSets=[
 [[0,-1],[-.8,-.7],[-1,.25],[-.4,1],[.45,.82],[1,.15],[.7,-.75]]
 ];
 function clipShape(c,x,y,r,l){const pts=shapeSets[l];c.beginPath();pts.forEach((p,i)=>i?c.lineTo(x+p[0]*r,y+p[1]*r):c.moveTo(x+p[0]*r,y+p[1]*r));c.closePath();c.clip()}
-function draw(c,x,y,l,preview=false){const r=preview?Math.min(28,radii[l]*.34):radii[l],im=imgs[l];c.save();if(im&&im.complete&&im.naturalWidth){const scale=Math.min(2*r/im.naturalWidth,2*r/im.naturalHeight),ww=im.naturalWidth*scale,hh=im.naturalHeight*scale;c.drawImage(im,x-ww/2,y-hh/2,ww,hh)}else{const colors=['#e7b65f','#e59b58','#d67f55','#c66c6c','#a979c2','#668bc9','#55a99d','#d0a64e','#c8758d'];c.fillStyle=colors[l]||'#c98d65';c.beginPath();c.arc(x,y,r*.72,0,Math.PI*2);c.fill()}c.restore()}function showNext(){nctx.clearRect(0,0,64,64);draw(nctx,32,32,nextLevel,true);document.getElementById('level').textContent=Math.min(9,currentLevel+1)}
+function draw(c,x,y,l,preview=false){const r=preview?Math.min(28,radii[l]*.34):radii[l],im=imgs[l];c.save();clipShape(c,x,y,r,l);if(im&&im.complete&&im.naturalWidth){const scale=Math.min(2*r/im.naturalWidth,2*r/im.naturalHeight),ww=im.naturalWidth*scale,hh=im.naturalHeight*scale;c.drawImage(im,x-ww/2,y-hh/2,ww,hh)}else{const colors=['#e7b65f','#e59b58','#d67f55','#c66c6c','#a979c2','#668bc9','#55a99d','#d0a64e','#c8758d'];c.fillStyle=colors[l]||'#c98d65';c.fill()}c.restore()}function showNext(){nctx.clearRect(0,0,64,64);draw(nctx,32,32,nextLevel,true);document.getElementById('level').textContent=Math.min(9,currentLevel+1)}
 function resize(){const b=cvs.getBoundingClientRect(),d=devicePixelRatio||1;W=b.width;H=Math.max(520,Math.min(760,W*1.52));cvs.width=W*d;cvs.height=H*d;ctx.setTransform(d,0,0,d,0,0)}
 function reset(){balls=[];score=0;gameOver=false;dangerTime=0;aimX=W/2;hasAim=false;currentLevel=0;nextLevel=Math.floor(Math.random()*4);document.getElementById('score').textContent=0;document.getElementById('hint').style.display='block';showNext();resize()}
 function drop(x){if(gameOver)return;const l=nextLevel,r=radii[l];balls.push({x:Math.max(r,Math.min(W-r,x)),y:r+4,vx:0,vy:0,l,r,passedLine:false,wentAbove:false,prevTop:4});currentLevel=l;document.getElementById('hint').style.display='none';nextLevel=Math.floor(Math.random()*4);showNext()}
@@ -45,6 +45,7 @@ function clipShape(c,x,y,r,l){c.beginPath();if(l===0){c.arc(x,y,r,0,Math.PI*2)}e
 
 
 function clipShape(c,x,y,r,l){const pts=shapeSets[l];c.beginPath();pts.forEach((p,i)=>i?c.lineTo(x+p[0]*r,y+p[1]*r):c.moveTo(x+p[0]*r,y+p[1]*r));c.closePath();c.clip()}
+
 
 
 
