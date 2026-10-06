@@ -1,7 +1,14 @@
 ﻿const names=['level1.jpg','level2.jpg','level3.jpg','level4.jpg','level5.jpg','level6.jpg','level7.jpg','level8.jpg','level9.jpg'];
 const imgs=[];let imagesReady=false;
 function loadEmbeddedImage(i){const im=new Image();im.decoding='async';im.onload=()=>{imgs[i]=im;imagesReady=imgs.filter(Boolean).length===9};im.onerror=()=>{imgs[i]=null};im.src=(window.MERO_IMAGE_DATA&&window.MERO_IMAGE_DATA[i])||'';imgs[i]=im}
-names.forEach((n,i)=>loadEmbeddedImage(i));let W=0,H=0,balls=[],score=0,best=+localStorage.meroBest||0,nextLevel=0,currentLevel=0,gameOver=false,last=0,dangerTime=0,siuCooldown=0,aimX=0,hasAim=false;
+names.forEach((n,i)=>loadEmbeddedImage(i));
+const cvs=document.getElementById('game'),ctx=cvs.getContext('2d'),nextC=document.getElementById('next'),nctx=nextC.getContext('2d'),bgm=document.getElementById('bgm'),siu=document.getElementById('siu'),wowo=document.getElementById('wowo'),soundToggle=document.getElementById('soundToggle');
+let audioUnlocked=false;
+function unlockAudio(){if(audioUnlocked)return;audioUnlocked=true;[siu,wowo].forEach(a=>{if(!a)return;const old=a.volume;a.volume=0;const p=a.play();if(p)p.then(()=>{a.pause();a.currentTime=0;a.volume=old}).catch(()=>{a.volume=old})});if(bgm){bgm.volume=.22;bgm.loop=true;bgm.preload='auto';bgm.addEventListener('waiting',()=>bgm.play().catch(()=>{}));bgm.addEventListener('ended',()=>{bgm.currentTime=0;bgm.play().catch(()=>{})});bgm.play().catch(()=>{})}}
+function playFx(a){if(!a)return;if(!audioUnlocked)unlockAudio();a.volume=.68;a.currentTime=0;a.play().catch(()=>{})}
+document.addEventListener('pointerdown',unlockAudio,{once:true});
+if(soundToggle)soundToggle.addEventListener('click',()=>{unlockAudio();if(bgm){bgm.loop=true;bgm.play().then(()=>{soundToggle.textContent='Music ON'}).catch(()=>{soundToggle.textContent='Tap again'})}});
+let W=0,H=0,balls=[],score=0,best=+localStorage.meroBest||0,nextLevel=0,currentLevel=0,gameOver=false,last=0,dangerTime=0,siuCooldown=0,aimX=0,hasAim=false;
 const radii=[22,30,40,52,66,82,100,120,142];
 document.getElementById('best').textContent=best;
 function makeCutout(im){
@@ -35,6 +42,7 @@ function merge(){for(let i=0;i<balls.length;i++)for(let j=i+1;j<balls.length;j++
 function loop(t){const dt=Math.min(.9,(t-last)/16||1);last=t;siuCooldown=Math.max(0,siuCooldown-dt);if(!gameOver){for(const b of balls){const previousTop=b.prevTop;b.vy+=.26*dt;b.x+=b.vx*dt;b.y+=b.vy*dt;const nextTop=b.y-b.r;if(previousTop>=52&&nextTop<52)b.wentAbove=true;if(b.wentAbove&&previousTop<52&&nextTop>=52){if(siuCooldown<=0){playFx(siu);siuCooldown=480}b.wentAbove=false}if(nextTop>=52)b.passedLine=true;b.prevTop=nextTop;if(b.x<b.r){b.x=b.r;b.vx*=-.35}if(b.x>W-b.r){b.x=W-b.r;b.vx*=-.35}if(b.y>H-b.r){b.y=H-b.r;b.vy*=-.22;b.vx*=.8}}for(let k=0;k<6;k++)merge();const dangerCount=balls.filter(b=>b.y-b.r<52).length;const dangerNeed=Math.max(1,Math.ceil(balls.length/2));if(balls.length>0&&dangerCount>=dangerNeed)dangerTime+=dt;else dangerTime=0;if(dangerTime>180){gameOver=true;playFx(wowo);setTimeout(()=>alert('Game over! Score: '+score),100)}}ctx.clearRect(0,0,W,H);ctx.strokeStyle='#e5c4ab';ctx.setLineDash([8,10]);ctx.beginPath();ctx.moveTo(0,52);ctx.lineTo(W,52);ctx.stroke();ctx.setLineDash([]);if(!gameOver&&hasAim){const rr=radii[nextLevel],dropY=rr+4;ctx.save();ctx.strokeStyle='#c78f78aa';ctx.lineWidth=1;ctx.setLineDash([6,7]);ctx.beginPath();ctx.moveTo(aimX,52);ctx.lineTo(aimX,H);ctx.moveTo(0,dropY);ctx.lineTo(W,dropY);ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=.72;draw(ctx,aimX,dropY,nextLevel);ctx.restore()}balls.forEach(b=>draw(ctx,b.x,b.y,b.l));requestAnimationFrame(loop)}
 function px(e){const r=cvs.getBoundingClientRect();return(e.touches?e.touches[0].clientX:e.clientX)-r.left}
 cvs.addEventListener('pointermove',e=>{aimX=Math.max(0,Math.min(W,px(e)));hasAim=true});cvs.addEventListener('pointerdown',e=>{aimX=Math.max(0,Math.min(W,px(e)));hasAim=true});cvs.addEventListener('pointerup',e=>{aimX=Math.max(0,Math.min(W,px(e)));hasAim=true;drop(aimX)});document.getElementById('restart').onclick=reset;addEventListener('resize',resize);reset();requestAnimationFrame(loop);
+
 
 
 
