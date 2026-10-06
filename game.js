@@ -35,15 +35,6 @@ function merge(){for(let i=0;i<balls.length;i++)for(let j=i+1;j<balls.length;j++
 function loop(t){const dt=Math.min(.9,(t-last)/16||1);last=t;siuCooldown=Math.max(0,siuCooldown-dt);if(!gameOver){for(const b of balls){const previousTop=b.prevTop;b.vy+=.26*dt;b.x+=b.vx*dt;b.y+=b.vy*dt;const nextTop=b.y-b.r;if(previousTop>=52&&nextTop<52)b.wentAbove=true;if(b.wentAbove&&previousTop<52&&nextTop>=52){if(siuCooldown<=0){playFx(siu);siuCooldown=480}b.wentAbove=false}if(nextTop>=52)b.passedLine=true;b.prevTop=nextTop;if(b.x<b.r){b.x=b.r;b.vx*=-.35}if(b.x>W-b.r){b.x=W-b.r;b.vx*=-.35}if(b.y>H-b.r){b.y=H-b.r;b.vy*=-.22;b.vx*=.8}}for(let k=0;k<6;k++)merge();const dangerCount=balls.filter(b=>b.y-b.r<52).length;const dangerNeed=Math.max(1,Math.ceil(balls.length/2));if(balls.length>0&&dangerCount>=dangerNeed)dangerTime+=dt;else dangerTime=0;if(dangerTime>180){gameOver=true;playFx(wowo);setTimeout(()=>alert('Game over! Score: '+score),100)}}ctx.clearRect(0,0,W,H);ctx.strokeStyle='#e5c4ab';ctx.setLineDash([8,10]);ctx.beginPath();ctx.moveTo(0,52);ctx.lineTo(W,52);ctx.stroke();ctx.setLineDash([]);if(!gameOver&&hasAim){const rr=radii[nextLevel],dropY=rr+4;ctx.save();ctx.strokeStyle='#c78f78aa';ctx.lineWidth=1;ctx.setLineDash([6,7]);ctx.beginPath();ctx.moveTo(aimX,52);ctx.lineTo(aimX,H);ctx.moveTo(0,dropY);ctx.lineTo(W,dropY);ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=.72;draw(ctx,aimX,dropY,nextLevel);ctx.restore()}balls.forEach(b=>draw(ctx,b.x,b.y,b.l));requestAnimationFrame(loop)}
 function px(e){const r=cvs.getBoundingClientRect();return(e.touches?e.touches[0].clientX:e.clientX)-r.left}
 cvs.addEventListener('pointermove',e=>{aimX=Math.max(0,Math.min(W,px(e)));hasAim=true});cvs.addEventListener('pointerdown',e=>{aimX=Math.max(0,Math.min(W,px(e)));hasAim=true});cvs.addEventListener('pointerup',e=>{aimX=Math.max(0,Math.min(W,px(e)));hasAim=true;drop(aimX)});document.getElementById('restart').onclick=reset;addEventListener('resize',resize);reset();requestAnimationFrame(loop);
-function clipShape(c,x,y,r,l){c.beginPath();if(l===0){c.arc(x,y,r,0,Math.PI*2)}else if(l===1){c.moveTo(x,y-r);c.lineTo(x-r,y+r);c.lineTo(x+r,y+r)}else if(l===2){c.rect(x-r,y-r,2*r,2*r)}else if(l===3){c.ellipse(x,y,r,r*.62,0,0,Math.PI*2)}else if(l===4){for(let i=0;i<5;i++){const a=-Math.PI/2+i*Math.PI*2/5;if(i===0)c.moveTo(x+Math.cos(a)*r,y+Math.sin(a)*r)}}else if(l===5){for(let i=0;i<6;i++){const a=Math.PI/6+i*Math.PI/3;if(i===0)c.moveTo(x+Math.cos(a)*r,y+Math.sin(a)*r)}}else if(l===6){c.moveTo(x,y-r);c.lineTo(x+r,y);c.lineTo(x,y+r);c.lineTo(x-r,y)}else if(l===7){for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,rr=i%2?r:r*.48;if(i===0)c.moveTo(x+Math.cos(a)*rr,y+Math.sin(a)*rr)}}else{c.moveTo(x-r*.2,y-r);c.lineTo(x+r*.8,y-r*.35);c.lineTo(x+r*.55,y+r);c.lineTo(x-r*.7,y+r*.65);c.lineTo(x-r,y-r*.35)}c.closePath();c.clip()}
-
-
-
-
-
-
-
-function clipShape(c,x,y,r,l){const pts=shapeSets[l];c.beginPath();pts.forEach((p,i)=>i?c.lineTo(x+p[0]*r,y+p[1]*r):c.moveTo(x+p[0]*r,y+p[1]*r));c.closePath();c.clip()}
 
 
 
@@ -58,7 +49,12 @@ function clipShape(c,x,y,r,l){const pts=shapeSets[l];c.beginPath();pts.forEach((
 
 
 
-/* Final shape renderer: overrides legacy duplicate clipShape definitions. */
-function clipShape(c,x,y,r,l){const pts=shapeSets[l]||shapeSets[0];c.beginPath();c.moveTo(x+pts[0][0]*r,y+pts[0][1]*r);for(let i=1;i<pts.length;i++)c.lineTo(x+pts[i][0]*r,y+pts[i][1]*r);c.closePath();c.clip()}
+
+
+
+
+
+
+
 
 
