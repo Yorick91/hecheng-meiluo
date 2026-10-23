@@ -25,7 +25,7 @@ function makeCutout(im){
 function ngon(n,rot){const p=[];const r0=rot==null?-Math.PI/2:rot;for(let i=0;i<n;i++){const a=r0+2*Math.PI*i/n;p.push([Math.cos(a),Math.sin(a)])}return p}
 function chaikin(pts,it){const n=it==null?2:it;let p=pts;for(let k=0;k<n;k++){const q=[];for(let i=0;i<p.length;i++){const a=p[i],b=p[(i+1)%p.length];q.push([a[0]*.75+b[0]*.25,a[1]*.75+b[1]*.25]);q.push([a[0]*.25+b[0]*.75,a[1]*.25+b[1]*.75])}p=q}return p}
 function star(){const p=[];for(let k=0;k<10;k++){const r=k%2?.5:1,a=-Math.PI/2+Math.PI*k/5;p.push([Math.cos(a)*r,Math.sin(a)*r])}return p}
-function heart(){const raw=[];for(let k=0;k<80;k++){const t=2*Math.PI*k/80;const x=16*Math.pow(Math.sin(t),3)*.85;const y=13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t);raw.push([x,y])}let mx=1e9,Mx=-1e9,my=1e9,My=-1e9;raw.forEach(p=>{mx=Math.min(mx,p[0]);Mx=Math.max(Mx,p[0]);my=Math.min(my,p[1]);My=Math.max(My,p[1])});const cx=(mx+Mx)/2,cy=(my+My)/2,s=Math.max(Mx-mx,My-my)/2;return raw.map(p=>[(p[0]-cx)/s,(p[1]-cy)/s])}
+function gear(teeth){const p=[];const N=240;for(let k=0;k<N;k++){const a=2*Math.PI*k/N,c=Math.cos(teeth*a);const r=0.76+0.24*Math.max(0,Math.min(1,(c+0.3)/0.6));p.push([Math.cos(a)*r,Math.sin(a)*r])}return p}
 function flower(petals){const p=[];for(let k=0;k<160;k++){const t=2*Math.PI*k/160,r=.58+.42*Math.cos(petals*t);p.push([Math.cos(t)*r,Math.sin(t)*r])}return p}
 function norm(pts){let m=0;pts.forEach(p=>{m=Math.max(m,Math.hypot(p[0],p[1]))});const s=1/(m||1);return pts.map(p=>[p[0]*s,p[1]*s])}
 const shapeSets=[
@@ -36,7 +36,7 @@ norm(chaikin(ngon(4))),
 norm(chaikin(ngon(5))),
 norm(chaikin(ngon(6))),
 norm(chaikin(star())),
-norm(heart()),
+norm(gear(6)),
 norm(flower(8))
 ];
 function clipShape(c,x,y,r,l){const pts=shapeSets[l];c.beginPath();pts.forEach((p,i)=>i?c.lineTo(x+p[0]*r,y+p[1]*r):c.moveTo(x+p[0]*r,y+p[1]*r));c.closePath();c.clip()}
