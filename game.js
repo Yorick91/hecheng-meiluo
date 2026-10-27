@@ -1,6 +1,6 @@
 const names=['fast1.jpg','fast2.jpg','fast3.jpg','fast4.jpg','fast5.jpg','fast6.jpg','fast8.jpg','fast9.jpg'];
 const imgs=[];
-function loadImages(){names.forEach((n,i)=>{const im=new Image();im.decoding='async';im.onload=()=>{imgs[i]=im};im.onerror=()=>{const f=new Image();f.onload=()=>{imgs[i]=f};f.src='assets/level'+n.replace('fast','')};im.src='assets/'+n})}
+function loadImages(){names.forEach((n,i)=>{const im=new Image();im.onload=()=>{imgs[i]=im};im.onerror=()=>{const f=new Image();f.onload=()=>{imgs[i]=f};f.src='assets/level'+n.replace('fast','')+'?v=28'};im.src='assets/'+n+'?v=28'})}
 loadImages();
 const cvs=document.getElementById('game'),ctx=cvs.getContext('2d'),nextC=document.getElementById('next'),nctx=nextC.getContext('2d'),bgm=document.getElementById('bgm'),siu=document.getElementById('siu'),wowo=document.getElementById('wowo'),soundToggle=document.getElementById('soundToggle');
 let audioUnlocked=false,audioCtx=null,fxBuffers={};
